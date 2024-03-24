@@ -113,7 +113,7 @@ func (insta Instance) CreateFlow() (bool, error) {
 	}
 	if !response {
 		logging.Logger.Error().
-			Str("log", "Error At Create Request").
+			Str("log", "Error At Username Request").
 			Msg("[Enter Username]")
 		return false, err
 	}
@@ -126,7 +126,7 @@ func (insta Instance) CreateFlow() (bool, error) {
 	}
 	if !response {
 		logging.Logger.Error().
-			Str("log", "Error At Create Request").
+			Str("log", "Error At Name Request").
 			Msg("[Enter Username]")
 		return false, err
 	}
@@ -139,7 +139,7 @@ func (insta Instance) CreateFlow() (bool, error) {
 	}
 	if !response {
 		logging.Logger.Error().
-			Str("log", "Error At Create Request").
+			Str("log", "Error At Password Request").
 			Msg("[Enter Password]")
 		return false, err
 	}
@@ -152,7 +152,7 @@ func (insta Instance) CreateFlow() (bool, error) {
 	}
 	if !response {
 		logging.Logger.Error().
-			Str("log", "Error At Create Request").
+			Str("log", "Error At Seamless Request").
 			Msg("[Enter Password]")
 		return false, err
 	}
@@ -165,7 +165,7 @@ func (insta Instance) CreateFlow() (bool, error) {
 	}
 	if !response {
 		logging.Logger.Error().
-			Str("log", "Error At Create Request").
+			Str("log", "Error At Age Request").
 			Msg("[Enter Password]")
 		return false, err
 	}
@@ -218,8 +218,11 @@ func (insta *Instance) GetCsrf() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	// if helpers.IsFlag(resp) {
+	// 	return false, nil
+	// }
 	b, _ := ioutil.ReadAll(resp.Body)
-	err = ioutil.WriteFile("index.html", b, 0644)
+	// err = ioutil.WriteFile("index.html", b, 0644)
 	if err != nil {
 		fmt.Println("Error:", err)
 
@@ -315,6 +318,9 @@ func (insta *Instance) GetCookies() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	if helpers.IsFlag(resp) {
+		return false, nil
+	}
 	for _, cookie := range resp.Cookies() {
 		if cookie.Name == "csrftoken" {
 			insta.csrf = cookie.Value
@@ -384,10 +390,12 @@ func (insta *Instance) AttemptCreate() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	// if helpers.IsFlag(resp) {
+	// 	return false, nil
+	// }
 	b, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("ATTEMPT CREATE : ", string(b))
-
 	insta.username, err = helpers.RandomUsername(string(b))
+	fmt.Println(insta.username)
 	if err != nil {
 		return false, nil
 	}
@@ -444,12 +452,14 @@ func (insta *Instance) EnterUsername() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	b, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("ENTER USERNAME: ", string(b))
-	insta.username, err = helpers.RandomUsername(string(b))
-	if err != nil {
-		return false, nil
-	}
+	// if helpers.IsFlag(resp) {
+	// 	return false, nil
+	// }
+	// b, _ := ioutil.ReadAll(resp.Body)
+	// insta.username, err = helpers.RandomUsername(string(b))
+	// if err != nil {
+	// 	return false, nil
+	// }
 	if resp.StatusCode != 200 {
 		return false, nil
 	}
@@ -503,12 +513,17 @@ func (insta *Instance) EnterName() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	b, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("ENTER NAME: ", string(b))
-	insta.username, err = helpers.RandomUsername(string(b))
-	if err != nil {
-		return false, nil
-	}
+	// if helpers.IsFlag(resp) {
+	// 	return false, nil
+	// }
+	// b, err := ioutil.ReadAll(resp.Body)
+	// if err != nil {
+	// 	return false, err
+	// }
+	// insta.username, err = helpers.RandomUsername(string(b))
+	// if err != nil {
+	// 	return false, nil
+	// }
 	if resp.StatusCode != 200 {
 		return false, nil
 	}
@@ -516,7 +531,6 @@ func (insta *Instance) EnterName() (bool, error) {
 
 }
 func (insta *Instance) EnterPassword() (bool, error) {
-
 	insta.password = "Terminaliscute123$"
 	enc, err := encryptor.EncPassword(insta.password)
 	if err != nil {
@@ -571,7 +585,10 @@ func (insta *Instance) EnterPassword() (bool, error) {
 		return false, err
 	}
 	b, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("ENTER PASSWORD: ", string(b))
+	fmt.Println(string(b))
+	// if helpers.IsFlag(resp) {
+	// 	return false, nil
+	// }
 	if resp.StatusCode != 200 {
 		return false, nil
 	}
@@ -593,7 +610,6 @@ func (insta *Instance) EnterSeamless() (bool, error) {
 		"username":               insta.username,
 		"opt_into_one_tap":       "false",
 	}
-	fmt.Println(data)
 	req, err := http.NewRequest(http.MethodPost, "https://www.instagram.com/api/v1/web/accounts/web_create_ajax/attempt/", strings.NewReader(helpers.EncodeFormData(data)))
 	if err != nil {
 		return false, err
@@ -629,13 +645,13 @@ func (insta *Instance) EnterSeamless() (bool, error) {
 		"X-Requested-With":            {"XMLHttpRequest"},
 		"X-Web-Device-Id":             {insta.device_id},
 	}
-	fmt.Println(req.Header["Cookie"])
 	resp, err := insta.client.Do(req)
 	if err != nil {
 		return false, err
 	}
-	b, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("ENTER SEAMLESS: ", string(b))
+	// if helpers.IsFlag(resp) {
+	// 	return false, nil
+	// }
 	if resp.StatusCode != 200 {
 		return false, nil
 	}
@@ -694,8 +710,9 @@ func (insta *Instance) CheckAge() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	b, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("CHECK AGE: ", string(b))
+	// if helpers.IsFlag(resp) {
+	// 	return false, nil
+	// }
 	if resp.StatusCode != 200 {
 		return false, nil
 	}

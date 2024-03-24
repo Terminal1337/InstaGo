@@ -3,7 +3,7 @@ const { decodeUTF8,formatPublicKey, toHex, encodeBase64 } = require('./helpers/u
 const express = require('express');
 
 
-const GetEncryptedPassword = (password, version = "9", keyID = "87", publicKey = "8dd9aad29d9a614c338cff479f850d3ec57c525c33b3f702ab65e9e057fc087e") => {
+const GetEncryptedPassword = (password, version = "10", keyID = "108", publicKey = "5196c9fe9061cb8582330287ff63bd5b4cc154691d32a181dce84f88bfbab656") => {
     let d = decodeUTF8(password), timestamp = Math.floor(Date.now() / 1e3).toString(), e = decodeUTF8(timestamp);
     let j = 1, k = 1, l = 48, m = 2, n = 32, o = 16, p = j + k + m + n + l + o, f = 100 + d.length, a = +keyID;
 
@@ -52,7 +52,7 @@ const GetEncryptedPassword = (password, version = "9", keyID = "87", publicKey =
         u += o;
         t.set(b, u);
         password = encodeBase64(t);
-        return ["#PWD_INSTAGRAM_BROWSER", "10", timestamp, password].join(":")
+        return ["#PWD_INSTAGRAM_BROWSER", version, timestamp, password].join(":")
     })["catch"](function(a) {
         throw a
     })

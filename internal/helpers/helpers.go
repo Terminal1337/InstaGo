@@ -3,9 +3,12 @@ package helpers
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"strings"
 	"time"
+
+	http "github.com/bogdanfinn/fhttp"
 )
 
 var firstNames = []string{
@@ -45,4 +48,16 @@ func RandomFirstName() string {
 	rand.Seed(time.Now().UnixNano())
 	index := rand.Intn(len(firstNames))
 	return firstNames[index]
+}
+
+func IsFlag(resp *http.Response) bool {
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err.Error())
+		return true
+	}
+	if strings.Contains(string(b), `There was an error with your request. Please try again.`) {
+		return true
+	}
+	return false
 }
